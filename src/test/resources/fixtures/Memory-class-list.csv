@@ -1,0 +1,4 @@
+"Class","Objects","Shallow Size"
+"byte[]","12000","4096000"
+"java.lang.String","8000","320000"
+"java.util.HashMap$Node","5000","160000"
