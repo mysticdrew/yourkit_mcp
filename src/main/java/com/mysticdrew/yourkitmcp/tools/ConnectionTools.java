@@ -38,12 +38,12 @@ public final class ConnectionTools {
         );
     }
 
-    static String requireSession() {
+    public static String requireSession() {
         return "{\"type\":\"object\",\"properties\":{"
              + "\"sessionId\":{\"type\":\"string\"}},\"required\":[\"sessionId\"],\"additionalProperties\":false}";
     }
 
-    static String write(ObjectMapper json, Object value) {
+    public static String write(ObjectMapper json, Object value) {
         try { return json.writeValueAsString(value); }
         catch (Exception e) { throw new RuntimeException("JSON serialization failed: " + e.getMessage(), e); }
     }
