@@ -111,7 +111,7 @@ Add to your MCP client config (adjust paths):
 
 ## License
 
-TBD.
+[MIT](LICENSE).
 
 ## Thanks
 
