@@ -11,10 +11,8 @@ It does two things:
 2. **Snapshot analysis** — turn a captured `.snapshot` into compact, structured,
    token-bounded results (top hot spots, biggest memory classes, ...).
 
-> **Status:** in development. Design is finalized — see
-> [`docs/superpowers/specs/2026-06-17-yourkit-mcp-design.md`](docs/superpowers/specs/2026-06-17-yourkit-mcp-design.md).
-> The build and tool implementations are being written; commands below describe the
-> intended usage.
+> **Status:** in development. Design is finalized; the build and tool
+> implementations are being written. Commands below describe the intended usage.
 
 ## How it works
 
