@@ -32,7 +32,7 @@ public final class Config {
 
     public static Config fromHome(Path home) {
         Path jar = home.resolve("lib").resolve("yjp-controller-api-redist.jar");
-        boolean win = System.getProperty("os.name").toLowerCase().contains("win");
+        boolean win = System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("win");
         Path launcher = home.resolve("bin").resolve(win ? "profiler.bat" : "profiler.sh");
         if (!Files.exists(jar)) {
             throw new ProfilerException("YourKit controller jar not found: " + jar);

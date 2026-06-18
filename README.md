@@ -11,8 +11,7 @@ It does two things:
 2. **Snapshot analysis** — turn a captured `.snapshot` into compact, structured,
    token-bounded results (top hot spots, biggest memory classes, ...).
 
-> **Status:** in development. Design is finalized; the build and tool
-> implementations are being written. Commands below describe the intended usage.
+> **Status:** v1 implemented — 14 MCP tools, builds to a fat jar, and passes a stdio tool-list smoke test. Live control maps the verified YourKit v3 Controller API; end-to-end validation against a live agent + a real exported snapshot is the remaining manual step.
 
 ## How it works
 
@@ -32,7 +31,7 @@ it does not start the agent for you.
 
 ## Prerequisites
 
-- **JDK 17+** to run the server (built/tested with Adoptium JDK 25).
+- **JDK 17+** to run the server (built with Adoptium JDK 21 + Gradle 8.10, cross-compiled to Java 17 bytecode).
 - **YourKit Java Profiler** installed. Set `YOURKIT_HOME` to the install dir, e.g.
   `C:\Program Files\YourKit Java Profiler 2026.3.164`. The server uses:
   - `lib/yjp-controller-api-redist.jar` — Controller API (compile + runtime).
@@ -97,15 +96,15 @@ Add to your MCP client config (adjust paths):
 | `yourkit_connect(host?, port)` | Connect to an agent; returns a `sessionId` + pid/appName/status |
 | `yourkit_disconnect(sessionId)` | Drop a session |
 | `yourkit_status(sessionId)` | What's currently profiling |
-| `yourkit_start_cpu_profiling(sessionId, mode, options?)` | Start CPU — `sampling` / `tracing` / `call_counting` |
+| `yourkit_start_cpu_profiling(sessionId, mode)` | Start CPU — `sampling` / `tracing` / `call_counting` |
 | `yourkit_stop_cpu_profiling(sessionId)` | Stop CPU profiling |
-| `yourkit_start_alloc_profiling(sessionId, mode?, options?)` | Start allocation recording |
+| `yourkit_start_alloc_profiling(sessionId, mode?)` | Start allocation recording |
 | `yourkit_stop_alloc_profiling(sessionId)` | Stop allocation recording |
 | `yourkit_force_gc(sessionId)` | Force a GC |
 | `yourkit_advance_generation(sessionId, name?)` | Mark a memory generation (leak hunting) |
 | `yourkit_get_telemetry(sessionId)` | Heap size + total created objects |
 | `yourkit_capture_snapshot(sessionId, type)` | Capture `performance` / `memory` / `hprof` / `jfr`; returns the path |
-| `yourkit_analyze_snapshot(path, views?, topN?)` | Export + parse a snapshot → top-N JSON + raw export dir |
+| `yourkit_analyze_snapshot(path, topN?)` | Export + parse a snapshot → top-N JSON + raw export dir |
 | `yourkit_capture_and_analyze(sessionId, type, topN?)` | Convenience: capture then analyze in one call |
 
 ## Limitations (v1)

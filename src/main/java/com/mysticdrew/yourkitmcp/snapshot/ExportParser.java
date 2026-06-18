@@ -18,10 +18,11 @@ import java.util.stream.Stream;
 public final class ExportParser {
 
     public AnalysisResult parse(Path exportDir, int topN) {
+        int n = Math.max(0, topN);
         List<HotSpot> hotSpots = findFile(exportDir, "hot", "spot")
-            .map(p -> parseHotSpots(p, topN)).orElse(List.of());
+            .map(p -> parseHotSpots(p, n)).orElse(List.of());
         List<MemoryClass> classes = findFile(exportDir, "class", "list")
-            .map(p -> parseClasses(p, topN)).orElse(List.of());
+            .map(p -> parseClasses(p, n)).orElse(List.of());
         return new AnalysisResult(exportDir.toAbsolutePath().toString(), hotSpots, classes);
     }
 
