@@ -30,4 +30,24 @@ class ConfigTest {
                 () -> Config.fromHome(tmp.resolve("nope")));
         assertTrue(ex.getMessage().toLowerCase().contains("yourkit"));
     }
+
+    @Test
+    void fromEnvUnsetThrows() {
+        ProfilerException ex = assertThrows(ProfilerException.class,
+                () -> Config.fromEnv(k -> null));
+        assertTrue(ex.getMessage().contains("YOURKIT_HOME"));
+    }
+
+    @Test
+    void fromEnvBlankThrows() {
+        assertThrows(ProfilerException.class,
+                () -> Config.fromEnv(k -> "   "));
+    }
+
+    @Test
+    void fromEnvValidDelegates(@org.junit.jupiter.api.io.TempDir Path tmp) throws IOException {
+        String homePath = fakeHome(tmp).toString();
+        Config cfg = Config.fromEnv(k -> homePath);
+        assertTrue(cfg.controllerJar().toString().endsWith("yjp-controller-api-redist.jar"));
+    }
 }
