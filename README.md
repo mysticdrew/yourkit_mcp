@@ -56,12 +56,21 @@ The agent logs the port it bound at startup. That port is what you pass to
 
 ## Build
 
+The build requires YourKit to be installed; pass its root via `-PyourkitHome`:
+
 ```
-./gradlew build        # Linux/macOS
-gradlew.bat build      # Windows
+# Windows
+gradlew.bat -PyourkitHome="C:\Program Files\YourKit Java Profiler 2026.3.164" build
+
+# Linux / macOS
+./gradlew -PyourkitHome="/opt/yourkit" build
 ```
 
-Produces a runnable jar under `build/libs/`.
+Produces a runnable fat-jar at `build/libs/yourkit-mcp.jar`.
+
+> **Note:** `YOURKIT_HOME` must also be set in the MCP client `env` block at runtime
+> (the server calls `Config.fromEnv()` at startup and exits immediately if it is absent
+> or points to a missing directory — see the Configure section below).
 
 ## Configure in Claude Code / Desktop
 
@@ -106,6 +115,11 @@ Add to your MCP client config (adjust paths):
   captured on a remote agent host is out of scope for v1.
 - Thread / monitor / exception / JFR start-stop are not exposed as tools in v1
   (the architecture leaves room to add them).
+- `yourkit_analyze_snapshot` and `yourkit_capture_and_analyze` write each snapshot's
+  exported CSVs into a fresh temp directory (path returned in the result as
+  `exportDir`) that is **intentionally not deleted** so callers can drill into raw
+  data. These directories accumulate over a long-running session and can be cleaned
+  manually (e.g. delete all `ykexport-*` dirs from the system temp folder).
 
 ## License
 
