@@ -14,9 +14,13 @@ import com.yourkit.api.controller.v3.TotalCreatedObjects;
 import java.io.IOException;
 
 public final class YourKitControllerService implements ControllerService {
+    private final String host;
+    private final int port;
     private final Controller controller;
 
     public YourKitControllerService(String host, int port) {
+        this.host = host;
+        this.port = port;
         try {
             this.controller = Controller.newBuilder().host(host).port(port).build();
         } catch (Exception e) {
@@ -91,7 +95,7 @@ public final class YourKitControllerService implements ControllerService {
     @Override public void close() { /* v3 Controller holds no persistent socket; nothing to release */ }
 
     private ProfilerException connError(IOException e) {
-        return new ProfilerException("YourKit agent communication failed: " + e.getMessage()
-            + " (is the agent listening on the configured host:port?)", e);
+        return new ProfilerException("YourKit agent communication failed at " + host + ":" + port + ": "
+            + e.getMessage() + " (is the agent listening there?)", e);
     }
 }
