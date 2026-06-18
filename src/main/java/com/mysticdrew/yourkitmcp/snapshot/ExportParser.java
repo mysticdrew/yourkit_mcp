@@ -65,7 +65,7 @@ public final class ExportParser {
 
     private void forEachRow(Path file, RowConsumer consumer) {
         try {
-            List<String> lines = Files.readAllLines(file);
+            List<String> lines = Files.readAllLines(file, java.nio.charset.StandardCharsets.UTF_8);
             if (lines.isEmpty()) return;
             String[] headerCells = splitCsv(lines.get(0));
             Map<String, Integer> header = new HashMap<>();
@@ -83,8 +83,9 @@ public final class ExportParser {
 
     /** Resolve a cell whose header CONTAINS the given key (case-insensitive). */
     private String cell(Map<String, Integer> header, String[] row, String key) {
+        String needle = key.toLowerCase(Locale.ROOT);
         for (Map.Entry<String, Integer> e : header.entrySet()) {
-            if (e.getKey().contains(key) && e.getValue() < row.length) {
+            if (e.getKey().contains(needle) && e.getValue() < row.length) {
                 return row[e.getValue()].trim();
             }
         }
