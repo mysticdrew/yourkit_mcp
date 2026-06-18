@@ -24,6 +24,8 @@ dependencies {
     if (controllerJar && controllerJar.exists()) {
         implementation files(controllerJar)
     }
+    // Jackson 2 ObjectMapper for ConnectionTools (MCP SDK ships Jackson 3 only)
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
     testImplementation platform('org.junit:junit-bom:5.11.3')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
