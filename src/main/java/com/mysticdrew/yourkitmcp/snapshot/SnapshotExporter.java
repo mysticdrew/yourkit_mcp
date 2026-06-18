@@ -22,17 +22,25 @@ public final class SnapshotExporter {
         if (!Files.exists(snapshot)) {
             throw new ProfilerException("Snapshot not found: " + snapshot);
         }
+        Path logFile;
         try {
             Files.createDirectories(targetDir);
+            logFile = Files.createTempFile("yk-export-", ".log");
+        } catch (IOException e) {
+            throw new ProfilerException("Failed to prepare export: " + e.getMessage(), e);
+        }
+        try {
             Process p = new ProcessBuilder(buildCommand(snapshot, targetDir))
-                .redirectErrorStream(true).start();
-            String output = new String(p.getInputStream().readAllBytes());
+                .redirectErrorStream(true)
+                .redirectOutput(logFile.toFile())
+                .start();
             if (!p.waitFor(120, TimeUnit.SECONDS)) {
                 p.destroyForcibly();
                 throw new ProfilerException("Export timed out after 120s for " + snapshot);
             }
+            String output = Files.exists(logFile) ? Files.readString(logFile).trim() : "";
             if (p.exitValue() != 0) {
-                throw new ProfilerException("Export failed (exit " + p.exitValue() + "): " + output.trim());
+                throw new ProfilerException("Export failed (exit " + p.exitValue() + "): " + output);
             }
             return targetDir;
         } catch (IOException e) {
@@ -40,6 +48,8 @@ public final class SnapshotExporter {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new ProfilerException("Export interrupted", e);
+        } finally {
+            try { Files.deleteIfExists(logFile); } catch (IOException ignored) {}
         }
     }
 }
