@@ -15,9 +15,10 @@ class SnapshotExporterTest {
         SnapshotExporter ex = new SnapshotExporter(Path.of("C:/yk/bin/profiler.bat"));
         List<String> cmd = ex.buildCommand(Path.of("C:/snaps/a.snapshot"), Path.of("C:/out"));
         assertEquals("C:\\yk\\bin\\profiler.bat".replace('\\','/'), cmd.get(0).replace('\\','/'));
-        assertEquals("-export", cmd.get(1));
-        assertTrue(cmd.get(2).endsWith("a.snapshot"));
-        assertTrue(cmd.get(3).endsWith("out"));
+        assertEquals("-accept-eula", cmd.get(1));
+        assertEquals("-export", cmd.get(2));
+        assertTrue(cmd.get(3).endsWith("a.snapshot"));
+        assertTrue(cmd.get(4).endsWith("out"));
     }
 
     @Test

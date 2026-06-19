@@ -14,7 +14,12 @@ public final class SnapshotExporter {
     public SnapshotExporter(Path launcher) { this.launcher = launcher; }
 
     List<String> buildCommand(Path snapshot, Path targetDir) {
-        return List.of(launcher.toString(), "-export",
+        // -accept-eula is required for headless export on a machine where the YourKit
+        // EULA has not been accepted yet (fresh install / CI / new user); without it the
+        // launcher blocks waiting for acceptance and the export hangs until timeout. The
+        // flag is idempotent (prints "EULA has been accepted." and proceeds) and must
+        // precede -export.
+        return List.of(launcher.toString(), "-accept-eula", "-export",
             snapshot.toAbsolutePath().toString(), targetDir.toAbsolutePath().toString());
     }
 
