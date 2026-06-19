@@ -33,7 +33,7 @@ public final class Main {
         Config config = Config.fromEnv();
         var json = new ObjectMapper();
         SessionManager mgr = new SessionManager(new YourKitControllerServiceFactory());
-        SnapshotExporter exporter = new SnapshotExporter(config.profilerLauncher());
+        SnapshotExporter exporter = new SnapshotExporter(config.javaExecutable(), config.exporterJar());
         ExportParser parser = new ExportParser();
 
         // Aggregate all tool specs: ping + connection + profiling + snapshot

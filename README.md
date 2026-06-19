@@ -120,6 +120,48 @@ Add to your MCP client config (adjust paths):
   data. These directories accumulate over a long-running session and can be cleaned
   manually (e.g. delete all `ykexport-*` dirs from the system temp folder).
 
+## Known issues
+
+### Snapshot export fails with "Cannot accept EULA" under some MCP hosts
+
+`yourkit_analyze_snapshot` / `yourkit_capture_and_analyze` shell out to the YourKit
+exporter (`java -jar yourkit.jar -accept-eula -export ...`). Under some MCP hosts the
+exporter subprocess exits early with:
+
+```
+Export failed (exit 1): Cannot accept EULA.
+```
+
+This is **not** a bug in the command, the EULA flag, or `user.home`. The exporter is
+invoked correctly: it launches the UI jar directly (not `bin/profiler.bat`, which would
+pin YourKit's settings dir to the read-only install dir) and pins `-Duser.home` to the
+user profile that holds the license and prior EULA acceptance. Verified equal to a known
+-good manual run: same command, same environment (`USERPROFILE`/`HOMEDRIVE`/`APPDATA`),
+same resolved `user.home`, and the spawned child can write `~/.yjp`. The **identical
+command succeeds when run from a shell** and fails **only** when the YourKit subprocess
+is spawned by the host-launched MCP server — a host-imposed process restriction
+(restricted token / job object / sandbox) that YourKit's early license + EULA check trips
+on. It cannot be worked around from inside this server.
+
+**Unaffected:** all live-control tools (`connect`, `start/stop` CPU & allocation,
+`capture_snapshot`, `status`, `telemetry`, `force_gc`). Only the snapshot **export/analyze**
+step is affected.
+
+**Workaround** — capture via MCP, analyze manually:
+
+1. `yourkit_capture_snapshot(sessionId, "performance")` → returns the `.snapshot` path.
+2. Export it yourself from a normal shell (this always works):
+
+   ```
+   "%YOURKIT_HOME%\jre64\bin\java.exe" -jar "%YOURKIT_HOME%\lib\yourkit.jar" \
+       -accept-eula -export "<snapshot>.snapshot" "<out-dir>"
+   ```
+
+   Then read the CSVs in `<out-dir>` (`Method-list-CPU.csv`, `Table-File-Write.csv`, etc.).
+
+If your host can launch MCP servers without a sandbox / with a full token, that also
+resolves it; configure that at the host level (e.g. the MCP client config).
+
 ## License
 
 [MIT](LICENSE).

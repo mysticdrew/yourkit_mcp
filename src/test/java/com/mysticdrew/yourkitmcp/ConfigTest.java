@@ -10,18 +10,18 @@ class ConfigTest {
 
     private Path fakeHome(Path tmp) throws IOException {
         Files.createDirectories(tmp.resolve("lib"));
-        Files.createDirectories(tmp.resolve("bin"));
         Files.writeString(tmp.resolve("lib/yjp-controller-api-redist.jar"), "x");
-        boolean win = System.getProperty("os.name").toLowerCase().contains("win");
-        Files.writeString(tmp.resolve(win ? "bin/profiler.bat" : "bin/profiler.sh"), "x");
+        Files.writeString(tmp.resolve("lib/yourkit.jar"), "x");
         return tmp;
     }
 
     @Test
-    void resolvesJarAndLauncher(@org.junit.jupiter.api.io.TempDir Path tmp) throws IOException {
+    void resolvesJars(@org.junit.jupiter.api.io.TempDir Path tmp) throws IOException {
         Config cfg = Config.fromHome(fakeHome(tmp));
         assertTrue(cfg.controllerJar().toString().endsWith("yjp-controller-api-redist.jar"));
-        assertTrue(Files.exists(cfg.profilerLauncher()));
+        assertTrue(cfg.exporterJar().toString().endsWith("yourkit.jar"));
+        // No bundled jre64 in the fake home, so it falls back to "java" on PATH.
+        assertNotNull(cfg.javaExecutable());
     }
 
     @Test

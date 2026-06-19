@@ -19,7 +19,7 @@ class SnapshotToolsTest {
     void producesThreeSpecs() {
         SessionManager mgr = new SessionManager(new FakeControllerServiceFactory());
         List<SyncToolSpecification> specs = SnapshotTools.specs(
-            mgr, new SnapshotExporter(Path.of("C:/yk/bin/profiler.bat")), new ExportParser(), new ObjectMapper());
+            mgr, new SnapshotExporter(Path.of("C:/yk/jre64/bin/java.exe"), Path.of("C:/yk/lib/yourkit.jar")), new ExportParser(), new ObjectMapper());
         assertEquals(3, specs.size());
     }
 }
